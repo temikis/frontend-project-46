@@ -1,9 +1,11 @@
 import { readFileSync } from 'node:fs';
+import { cwd } from 'node:process';
+import { resolve } from 'node:path';
 import _ from 'lodash';
 
 const genDiff = (filepath1, filepath2) => {
-  const json1 = readFileSync(filepath1, 'utf8');
-  const json2 = readFileSync(filepath2, 'utf8');
+  const json1 = readFileSync(resolve(cwd(), filepath1), 'utf8');
+  const json2 = readFileSync(resolve(cwd(), filepath2), 'utf8');
   const file1 = JSON.parse(json1);
   const file2 = JSON.parse(json2);
 

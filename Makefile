@@ -10,5 +10,8 @@ lint:
 lint-fix:
 	npx eslint --fix .
 
+tests:
+	npx jest
+
 run:
-	gendiff /Volumes/lullz/Учеба\ Фронтенд/frontend-project-46/file1.json file2.json
+	gendiff /Volumes/lullz/Учеба\ Фронтенд/frontend-project-46/__tests__/__fixtures__/file1.json __tests__/__fixtures__/file2.json

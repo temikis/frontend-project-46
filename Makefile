@@ -11,10 +11,10 @@ lint-fix:
 	npx eslint --fix .
 
 test:
-	npm test
+	npm test --watch
 
 test-coverage:
 	npx jest --coverage
 
 run:
-	gendiff /Volumes/lullz/Учеба\ Фронтенд/frontend-project-46/__fixtures__/file1.json __fixtures__/file2.json
+	gendiff /Volumes/lullz/Учеба\ Фронтенд/frontend-project-46/__fixtures__/file1.json __fixtures__/file2.yaml

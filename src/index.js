@@ -1,13 +1,8 @@
-import { readFileSync } from 'node:fs';
-import { cwd } from 'node:process';
-import { resolve } from 'node:path';
 import _ from 'lodash';
+import parsers from './parsers.js';
 
 const genDiff = (filepath1, filepath2) => {
-  const json1 = readFileSync(resolve(cwd(), filepath1), 'utf8');
-  const json2 = readFileSync(resolve(cwd(), filepath2), 'utf8');
-  const file1 = JSON.parse(json1);
-  const file2 = JSON.parse(json2);
+  const [file1, file2] = parsers(filepath1, filepath2);
 
   const getStatusKeys = (obj1, obj2) => {
     const keys = _.union(Object.keys(obj1), Object.keys(obj2)).sort();

@@ -1,42 +1,28 @@
-import _ from 'lodash';
+import { readFileSync } from 'node:fs';
+import { cwd } from 'node:process';
+import { resolve, extname } from 'node:path';
 import parsers from './parsers.js';
+import getDifference from './diff.js';
+import designer from './designer.js';
 
-const genDiff = (filepath1, filepath2) => {
-  const [file1, file2] = parsers(filepath1, filepath2);
+const getData = (filepath) => {
+  let data;
 
-  const getStatusKeys = (obj1, obj2) => {
-    const keys = _.union(Object.keys(obj1), Object.keys(obj2)).sort();
-    const result = keys.reduce((acc, key) => {
-      if (Object.hasOwn(obj1, key) && Object.hasOwn(obj2, key)) {
-        if (obj1[key] === obj2[key]) {
-          acc.push({ key, value: obj1[key], status: 'unchanged' });
-        } else {
-          acc.push({ key, value: obj1[key], status: 'deleted' });
-          acc.push({ key, value: obj2[key], status: 'added' });
-        }
-      } else if (Object.hasOwn(obj1, key)) {
-        acc.push({ key, value: obj1[key], status: 'deleted' });
-      } else {
-        acc.push({ key, value: obj2[key], status: 'added' });
-      }
+  try {
+    data = readFileSync(resolve(cwd(), filepath), 'utf8');
+  } catch (e) {
+    console.log(e);
+  }
 
-      return acc;
-    }, []);
+  return data;
+};
+const getExtname = (filepath) => extname(filepath).toLowerCase();
 
-    return result;
-  };
+const genDiff = (filepath1, filepath2, format) => {
+  const file1 = parsers(getData(filepath1), getExtname(filepath1));
+  const file2 = parsers(getData(filepath2), getExtname(filepath2));
 
-  const designer = (arrayWithStatus) => {
-    const STATUSES = { unchanged: ' ', added: '+', deleted: '-' };
-    const r = arrayWithStatus.map((string) => {
-      const newString = `  ${STATUSES[string.status]} ${string.key}: ${string.value}`;
-      return newString;
-    });
-
-    return `{\n${r.join('\n')}\n}`;
-  };
-
-  return designer(getStatusKeys(file1, file2));
+  return designer(getDifference(file1, file2), format);
 };
 
 export default genDiff;

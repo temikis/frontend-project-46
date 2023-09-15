@@ -7,8 +7,14 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const getFixturePath = (filename) => join(__dirname, '../__fixtures__', filename);
 
-test('genDiff', () => {
+test('genDiff stylish', () => {
   const answer = readFileSync(getFixturePath('correct-answer1.txt'), 'utf8');
   expect(genDiff(getFixturePath('file1.json'), getFixturePath('file2.json'), 'stylish')).toEqual(answer);
   expect(genDiff(getFixturePath('file1.yml'), getFixturePath('file2.yaml'), 'stylish')).toEqual(answer);
+});
+
+test('genDiff plain', () => {
+  const answer = readFileSync(getFixturePath('correct-answer2.txt'), 'utf8');
+  expect(genDiff(getFixturePath('file1.json'), getFixturePath('file2.json'), 'plain')).toEqual(answer);
+  expect(genDiff(getFixturePath('file1.yml'), getFixturePath('file2.yaml'), 'plain')).toEqual(answer);
 });

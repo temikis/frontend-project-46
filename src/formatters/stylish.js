@@ -27,9 +27,7 @@ const stylish = (arrayWithState) => {
       ].join('\n');
     }
     const lines = currentValue.map((element) => {
-      const {
-        key, value, value1, value2, state,
-      } = element;
+      const { key, value, state } = element;
 
       switch (state) {
         case 'added':
@@ -40,7 +38,7 @@ const stylish = (arrayWithState) => {
         case 'compare':
           return `${currentIndent}  ${key}: ${iter(value, depth + 1)}`;
         case 'updated':
-          return `${currentIndent}- ${key}: ${iter(value1, depth + 1)}\n${currentIndent}+ ${key}: ${iter(value2, depth + 1)}`;
+          return `${currentIndent}- ${key}: ${iter(value[0], depth + 1)}\n${currentIndent}+ ${key}: ${iter(value[1], depth + 1)}`;
         default:
           throw new Error('Unknown state');
       }

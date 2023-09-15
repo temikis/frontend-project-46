@@ -17,4 +17,4 @@ test-coverage:
 	npx jest --coverage
 
 run:
-	gendiff /Volumes/lullz/Учеба\ Фронтенд/frontend-project-46/__fixtures__/file1.json __fixtures__/file2.json
+	gendiff --format plain /Volumes/lullz/Учеба\ Фронтенд/frontend-project-46/__fixtures__/file1.json __fixtures__/file2.json

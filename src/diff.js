@@ -15,7 +15,7 @@ const getDifference = (obj1, obj2) => {
       return { state: 'compare', key, value: getDifference(obj1[key], obj2[key]) };
     }
     return {
-      state: 'updated', key, value1: obj1[key], value2: obj2[key],
+      state: 'updated', key, value: [obj1[key], obj2[key]],
     };
   });
 

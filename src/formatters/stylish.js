@@ -3,9 +3,7 @@ import _ from 'lodash';
 const SPACE_COUNT = 4;
 const REPLACER = ' ';
 
-const designer = (arrayWithState, format) => {
-  if (format) console.log(format);
-
+const stylish = (arrayWithState) => {
   const iter = (currentValue, depth) => {
     if (!_.isObject(currentValue)) {
       return `${currentValue}`;
@@ -18,7 +16,7 @@ const designer = (arrayWithState, format) => {
     if (!_.isArray(currentValue)) {
       const keys = Object.keys(currentValue);
       const lines = keys.map((key) => {
-        const line = `${REPLACER.repeat(indentSize - 2)}  ${key}: ${iter(currentValue[key], depth + 1)}`;
+        const line = `${currentIndent}  ${key}: ${iter(currentValue[key], depth + 1)}`;
         return line;
       });
 
@@ -39,13 +37,12 @@ const designer = (arrayWithState, format) => {
         case 'deleted':
           return `${currentIndent}- ${key}: ${iter(value, depth + 1)}`;
         case 'unchanged':
-          return `${currentIndent}  ${key}: ${iter(value, depth + 1)}`;
         case 'compare':
           return `${currentIndent}  ${key}: ${iter(value, depth + 1)}`;
-        case 'changed':
+        case 'updated':
           return `${currentIndent}- ${key}: ${iter(value1, depth + 1)}\n${currentIndent}+ ${key}: ${iter(value2, depth + 1)}`;
         default:
-          throw Error;
+          throw new Error('Unknown state');
       }
     });
 
@@ -59,4 +56,4 @@ const designer = (arrayWithState, format) => {
   return iter(arrayWithState, 1);
 };
 
-export default designer;
+export default stylish;

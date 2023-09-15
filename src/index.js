@@ -3,7 +3,7 @@ import { cwd } from 'node:process';
 import { resolve, extname } from 'node:path';
 import parsers from './parsers.js';
 import getDifference from './diff.js';
-import designer from './designer.js';
+import formatters from './formatters/index.js';
 
 const getData = (filepath) => {
   let data;
@@ -18,11 +18,12 @@ const getData = (filepath) => {
 };
 const getExtname = (filepath) => extname(filepath).toLowerCase();
 
-const genDiff = (filepath1, filepath2, format) => {
+const genDiff = (filepath1, filepath2, formatName) => {
   const file1 = parsers(getData(filepath1), getExtname(filepath1));
   const file2 = parsers(getData(filepath2), getExtname(filepath2));
+  console.log(JSON.stringify(getDifference(file1, file2), null, 2));
 
-  return designer(getDifference(file1, file2), format);
+  return formatters(getDifference(file1, file2), formatName);
 };
 
 export default genDiff;

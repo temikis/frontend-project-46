@@ -1,14 +1,18 @@
 import stylish from './stylish.js';
 import plain from './plain.js';
+import json from './json.js';
 
 const formatters = (data, formatName) => {
-  if (formatName === 'stylish') {
-    return stylish(data);
+  switch (formatName) {
+    case 'json':
+      return json(data);
+    case 'plain':
+      return plain(data);
+    case 'stylish':
+      return stylish(data);
+    default:
+      throw new Error(`Unknown format type - ${formatName}`);
   }
-  if (formatName === 'plain') {
-    return plain(data);
-  }
-  return '';
 };
 
 export default formatters;

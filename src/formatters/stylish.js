@@ -3,51 +3,45 @@ import _ from 'lodash';
 const SPACE_COUNT = 4;
 const REPLACER = ' ';
 
+const getBracketIndent = (depth) => REPLACER.repeat(SPACE_COUNT * (depth - 1));
+const getCurrentIndent = (depth) => REPLACER.repeat(depth * SPACE_COUNT - 2);
+
 const stylish = (arrayWithState) => {
   const iter = (currentValue, depth) => {
+    let lines;
+
     if (!_.isObject(currentValue)) {
       return `${currentValue}`;
     }
-
-    const indentSize = depth * SPACE_COUNT;
-    const currentIndent = REPLACER.repeat(indentSize - 2);
-    const bracketIndent = REPLACER.repeat(indentSize - SPACE_COUNT);
-
     if (!_.isArray(currentValue)) {
       const keys = Object.keys(currentValue);
-      const lines = keys.map((key) => {
-        const line = `${currentIndent}  ${key}: ${iter(currentValue[key], depth + 1)}`;
+      lines = keys.map((key) => {
+        const line = `${getCurrentIndent(depth)}  ${key}: ${iter(currentValue[key], depth + 1)}`;
         return line;
       });
-
-      return [
-        '{',
-        ...lines,
-        `${bracketIndent}}`,
-      ].join('\n');
+    } else {
+      lines = currentValue.map((element) => {
+        const { key, value, state } = element;
+        switch (state) {
+          case 'added':
+            return `${getCurrentIndent(depth)}+ ${key}: ${iter(value, depth + 1)}`;
+          case 'deleted':
+            return `${getCurrentIndent(depth)}- ${key}: ${iter(value, depth + 1)}`;
+          case 'unchanged':
+          case 'compare':
+            return `${getCurrentIndent(depth)}  ${key}: ${iter(value, depth + 1)}`;
+          case 'updated':
+            return `${getCurrentIndent(depth)}- ${key}: ${iter(value[0], depth + 1)}\n${getCurrentIndent(depth)}+ ${key}: ${iter(value[1], depth + 1)}`;
+          default:
+            throw new Error('Unknown state');
+        }
+      });
     }
-    const lines = currentValue.map((element) => {
-      const { key, value, state } = element;
-
-      switch (state) {
-        case 'added':
-          return `${currentIndent}+ ${key}: ${iter(value, depth + 1)}`;
-        case 'deleted':
-          return `${currentIndent}- ${key}: ${iter(value, depth + 1)}`;
-        case 'unchanged':
-        case 'compare':
-          return `${currentIndent}  ${key}: ${iter(value, depth + 1)}`;
-        case 'updated':
-          return `${currentIndent}- ${key}: ${iter(value[0], depth + 1)}\n${currentIndent}+ ${key}: ${iter(value[1], depth + 1)}`;
-        default:
-          throw new Error('Unknown state');
-      }
-    });
 
     return [
       '{',
       ...lines,
-      `${bracketIndent}}`,
+      `${getBracketIndent(depth)}}`,
     ].join('\n');
   };
 

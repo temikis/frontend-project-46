@@ -6,33 +6,37 @@ import genDiff from '../src/index.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const getFixturePath = (filename) => join(__dirname, '../__fixtures__', filename);
+const jsonFilepath1 = getFixturePath('file1.json');
+const jsonFilepath2 = getFixturePath('file2.json');
+const yamlFilepath1 = getFixturePath('file1.yml');
+const yamlFilepath2 = getFixturePath('file2.yaml');
+const answerStylish = readFileSync(getFixturePath('correct-answer-stylish.txt'), 'utf8');
+const answerPlain = readFileSync(getFixturePath('correct-answer-plain.txt'), 'utf8');
+const answerJson = readFileSync(getFixturePath('correct-answer-json.txt'), 'utf8');
 
 test('format stylish', () => {
-  const answer = readFileSync(getFixturePath('correct-answer1.txt'), 'utf8');
-  expect(genDiff(getFixturePath('file1.json'), getFixturePath('file2.json'), 'stylish')).toEqual(answer);
-  expect(genDiff(getFixturePath('file1.yml'), getFixturePath('file2.yaml'), 'stylish')).toEqual(answer);
+  expect(genDiff(jsonFilepath1, jsonFilepath2, 'stylish')).toEqual(answerStylish);
+  expect(genDiff(yamlFilepath1, yamlFilepath2, 'stylish')).toEqual(answerStylish);
 });
 
 test('format plain', () => {
-  const answer = readFileSync(getFixturePath('correct-answer2.txt'), 'utf8');
-  expect(genDiff(getFixturePath('file1.json'), getFixturePath('file2.json'), 'plain')).toEqual(answer);
-  expect(genDiff(getFixturePath('file1.yml'), getFixturePath('file2.yaml'), 'plain')).toEqual(answer);
+  expect(genDiff(jsonFilepath1, jsonFilepath2, 'plain')).toEqual(answerPlain);
+  expect(genDiff(yamlFilepath1, yamlFilepath2, 'plain')).toEqual(answerPlain);
 });
 
 test('format json', () => {
-  const answer = readFileSync(getFixturePath('correct-answer3.txt'), 'utf8');
-  expect(genDiff(getFixturePath('file1.json'), getFixturePath('file2.json'), 'json')).toEqual(answer);
-  expect(genDiff(getFixturePath('file1.yml'), getFixturePath('file2.yaml'), 'json')).toEqual(answer);
+  expect(genDiff(jsonFilepath1, jsonFilepath2, 'json')).toEqual(answerJson);
+  expect(genDiff(yamlFilepath1, yamlFilepath2, 'json')).toEqual(answerJson);
 });
 
 test('wrong extname', () => {
   expect(() => {
-    genDiff(getFixturePath('file-with-incorrect-extname.jsan'), getFixturePath('file2.json'), 'json');
+    genDiff(getFixturePath('file-with-incorrect-extname.jsan'), jsonFilepath2, 'json');
   }).toThrow();
 });
 
 test('wrong style', () => {
   expect(() => {
-    genDiff(getFixturePath('file1.json'), getFixturePath('file2.json'), 'jsan');
+    genDiff(jsonFilepath1, jsonFilepath2, 'jsan');
   }).toThrow();
 });

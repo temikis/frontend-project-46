@@ -8,7 +8,7 @@ const arrayWithWrongState = [
   },
 ];
 
-test('module test: wrong state', () => {
+test('should be throw error when receiving a non-existent node type', () => {
   expect(() => {
     stylish(arrayWithWrongState);
   }).toThrow();

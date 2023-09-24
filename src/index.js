@@ -5,18 +5,8 @@ import parsers from './parsers.js';
 import getDifference from './diff.js';
 import formatters from './formatters/index.js';
 
-const getData = (filepath) => {
-  let data;
-
-  try {
-    data = readFileSync(resolve(cwd(), filepath), 'utf8');
-  } catch (e) {
-    console.log(e);
-  }
-
-  return data;
-};
-const getExtname = (filepath) => extname(filepath).toLowerCase();
+const getData = (filepath) => readFileSync(resolve(cwd(), filepath), 'utf8');
+const getExtname = (filepath) => extname(filepath).toLowerCase().slice(1);
 
 const genDiff = (filepath1, filepath2, formatName) => {
   const file1 = parsers(getData(filepath1), getExtname(filepath1));

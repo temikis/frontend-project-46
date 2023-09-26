@@ -8,35 +8,32 @@ const getCurrentIndent = (depth) => REPLACER.repeat(depth * SPACE_COUNT - 2);
 
 const stylish = (arrayWithState) => {
   const iter = (currentValue, depth) => {
-    let lines;
+    const getLinesObj = (obj) => {
+      const keys = Object.keys(obj);
+      return keys.map((key) => `${getCurrentIndent(depth)}  ${key}: ${iter(obj[key], depth + 1)}`);
+    };
+
+    const getLinesArray = (array) => array.map((element) => {
+      const { key, value, state } = element;
+      switch (state) {
+        case 'added':
+          return `${getCurrentIndent(depth)}+ ${key}: ${iter(value, depth + 1)}`;
+        case 'deleted':
+          return `${getCurrentIndent(depth)}- ${key}: ${iter(value, depth + 1)}`;
+        case 'unchanged':
+        case 'compare':
+          return `${getCurrentIndent(depth)}  ${key}: ${iter(value, depth + 1)}`;
+        case 'updated':
+          return `${getCurrentIndent(depth)}- ${key}: ${iter(value[0], depth + 1)}\n${getCurrentIndent(depth)}+ ${key}: ${iter(value[1], depth + 1)}`;
+        default:
+          throw new Error('Unknown state');
+      }
+    });
 
     if (!_.isObject(currentValue)) {
       return `${currentValue}`;
     }
-    if (!_.isArray(currentValue)) {
-      const keys = Object.keys(currentValue);
-      lines = keys.map((key) => {
-        const line = `${getCurrentIndent(depth)}  ${key}: ${iter(currentValue[key], depth + 1)}`;
-        return line;
-      });
-    } else {
-      lines = currentValue.map((element) => {
-        const { key, value, state } = element;
-        switch (state) {
-          case 'added':
-            return `${getCurrentIndent(depth)}+ ${key}: ${iter(value, depth + 1)}`;
-          case 'deleted':
-            return `${getCurrentIndent(depth)}- ${key}: ${iter(value, depth + 1)}`;
-          case 'unchanged':
-          case 'compare':
-            return `${getCurrentIndent(depth)}  ${key}: ${iter(value, depth + 1)}`;
-          case 'updated':
-            return `${getCurrentIndent(depth)}- ${key}: ${iter(value[0], depth + 1)}\n${getCurrentIndent(depth)}+ ${key}: ${iter(value[1], depth + 1)}`;
-          default:
-            throw new Error('Unknown state');
-        }
-      });
-    }
+    const lines = _.isArray(currentValue) ? getLinesArray(currentValue) : getLinesObj(currentValue);
 
     return [
       '{',

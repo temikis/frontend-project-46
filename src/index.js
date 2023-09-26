@@ -1,18 +1,33 @@
 import { readFileSync } from 'node:fs';
 import { cwd } from 'node:process';
-import { resolve, extname } from 'node:path';
-import parsers from './parsers.js';
+import { resolve, extname, basename } from 'node:path';
+import parse from './parsers.js';
 import getDifference from './diff.js';
-import formatters from './formatters/index.js';
+import format from './formatters/index.js';
 
-const getData = (filepath) => readFileSync(resolve(cwd(), filepath), 'utf8');
-const getExtname = (filepath) => extname(filepath).toLowerCase().slice(1);
+const getAbsolutePath = (filepath) => resolve(cwd(), filepath);
+
+const getExtname = (filepath) => {
+  const extension = extname(filepath);
+  const name = basename(filepath);
+
+  return extension ? extension.toLowerCase().slice(1) : name.toLowerCase();
+};
+
+const getData = (filepath) => {
+  const absolutePath = getAbsolutePath(filepath);
+  const extension = getExtname(filepath);
+  const file = readFileSync(absolutePath, 'utf8');
+  const data = parse(file, extension);
+
+  return data;
+};
 
 const genDiff = (filepath1, filepath2, formatName) => {
-  const file1 = parsers(getData(filepath1), getExtname(filepath1));
-  const file2 = parsers(getData(filepath2), getExtname(filepath2));
+  const data1 = getData(filepath1);
+  const data2 = getData(filepath2);
 
-  return formatters(getDifference(file1, file2), formatName);
+  return format(getDifference(data1, data2), formatName);
 };
 
 export default genDiff;

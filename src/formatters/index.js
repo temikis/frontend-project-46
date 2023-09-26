@@ -2,7 +2,7 @@ import stylish from './stylish.js';
 import plain from './plain.js';
 import json from './json.js';
 
-const formatters = (data, formatName) => {
+const format = (data, formatName) => {
   switch (formatName) {
     case 'json':
       return json(data);
@@ -15,4 +15,4 @@ const formatters = (data, formatName) => {
   }
 };
 
-export default formatters;
+export default format;

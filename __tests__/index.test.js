@@ -29,13 +29,17 @@ test('format json', () => {
   expect(genDiff(yamlFilepath1, yamlFilepath2, 'json')).toEqual(answerJson);
 });
 
-test('wrong extname', () => {
+test('format file without extname', () => {
+  expect(genDiff(getFixturePath('yml'), yamlFilepath2, 'json')).toEqual(answerJson);
+});
+
+test('should be throw error when receiving a non-existent extname', () => {
   expect(() => {
-    genDiff(getFixturePath('file-with-incorrect-extname.jsan'), jsonFilepath2, 'json');
+    genDiff(getFixturePath('file-with-incorrect-extname.jsan'), jsonFilepath2, 'stylish');
   }).toThrow();
 });
 
-test('wrong style', () => {
+test('should be throw error when receiving a non-existent style', () => {
   expect(() => {
     genDiff(jsonFilepath1, jsonFilepath2, 'jsan');
   }).toThrow();

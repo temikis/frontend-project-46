@@ -1,41 +1,32 @@
 import _ from 'lodash';
 
 const handler = (rawValue) => {
-  if (_.isObject(rawValue)) {
-    return '[complex value]';
-  }
-  return (typeof rawValue === 'string') ? `'${rawValue}'` : rawValue;
+  if (_.isObject(rawValue)) return '[complex value]';
+  if (typeof rawValue === 'string') return `'${rawValue}'`;
+
+  return rawValue;
 };
 
-const plain = (arrayWithState) => {
-  const emptyPath = '';
+const iter = (currentValue, path = '') => {
+  const lines = currentValue.flatMap(({ state, key, value }) => {
+    const newPath = path ? `${path}.${key}` : key;
+    switch (state) {
+      case 'compare':
+        return iter(value, newPath);
+      case 'added':
+        return `Property '${newPath}' was added with value: ${handler(value)}`;
+      case 'deleted':
+        return `Property '${newPath}' was removed`;
+      case 'updated':
+        return `Property '${newPath}' was updated. From ${handler(value[0])} to ${handler(value[1])}`;
+      default:
+    }
+    return null;
+  });
 
-  const iter = (currentValue, path) => {
-    const lines = currentValue.reduce((acc, element) => {
-      const { state, key, value } = element;
-      const newPath = path ? `${path}.${key}` : key;
-      switch (state) {
-        case 'compare':
-          acc.push(iter(value, newPath));
-          break;
-        case 'added':
-          acc.push(`Property '${newPath}' was added with value: ${handler(value)}`);
-          break;
-        case 'deleted':
-          acc.push(`Property '${newPath}' was removed`);
-          break;
-        case 'updated':
-          acc.push(`Property '${newPath}' was updated. From ${handler(value[0])} to ${handler(value[1])}`);
-          break;
-        default:
-      }
-      return acc;
-    }, []);
-
-    return lines.flat();
-  };
-
-  return iter(arrayWithState, emptyPath).join('\n');
+  return lines.filter(Boolean);
 };
+
+const plain = (arrayWithState) => iter(arrayWithState).join('\n');
 
 export default plain;

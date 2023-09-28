@@ -17,6 +17,8 @@ const answerJson = readFileSync(getFixturePath('correct-answer-json.txt'), 'utf8
 test('format stylish', () => {
   expect(genDiff(jsonFilepath1, jsonFilepath2, 'stylish')).toEqual(answerStylish);
   expect(genDiff(yamlFilepath1, yamlFilepath2, 'stylish')).toEqual(answerStylish);
+  expect(genDiff(jsonFilepath1, jsonFilepath2)).toEqual(answerStylish);
+  expect(genDiff(yamlFilepath1, yamlFilepath2)).toEqual(answerStylish);
 });
 
 test('format plain', () => {

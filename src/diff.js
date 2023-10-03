@@ -1,29 +1,33 @@
 import _ from 'lodash';
 
-const getKeys = (obj1, obj2) => {
-  const keys1 = Object.keys(obj1);
-  const keys2 = Object.keys(obj2);
+const getKeys = (data1, data2) => {
+  const keys1 = Object.keys(data1);
+  const keys2 = Object.keys(data2);
   const keys = _.sortBy(_.union(keys1, keys2));
 
   return keys;
 };
 
-const getDifference = (obj1, obj2) => {
-  const keys = getKeys(obj1, obj2);
-  const result = keys.map((key) => {
-    if (!Object.hasOwn(obj1, key)) {
-      return { state: 'added', key, value: obj2[key] };
-    } if (!Object.hasOwn(obj2, key)) {
-      return { state: 'deleted', key, value: obj1[key] };
-    } if (obj1[key] === obj2[key]) {
-      return { state: 'unchanged', key, value: obj1[key] };
-    } if ((obj1[key] instanceof Object) && (obj2[key] instanceof Object)) {
-      return { state: 'compare', key, value: getDifference(obj1[key], obj2[key]) };
-    }
-    return { state: 'updated', key, value: [obj1[key], obj2[key]] };
-  });
+const getDifference = (data1, data2) => {
+  const keys = getKeys(data1, data2);
 
-  return result;
+  return keys.map((key) => {
+    if (!Object.hasOwn(data1, key)) {
+      return { type: 'added', key, value: data2[key] };
+    }
+    if (!Object.hasOwn(data2, key)) {
+      return { type: 'deleted', key, value: data1[key] };
+    }
+    if (_.isPlainObject(data1[key]) && _.isPlainObject(data2[key])) {
+      return { type: 'nested', key, children: getDifference(data1[key], data2[key]) };
+    }
+    if (_.isEqual(data1[key], data2[key])) {
+      return { type: 'unchanged', key, value: data1[key] };
+    }
+    return {
+      type: 'updated', key, value1: data1[key], value2: data2[key],
+    };
+  });
 };
 
 export default getDifference;

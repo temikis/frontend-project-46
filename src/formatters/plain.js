@@ -8,17 +8,19 @@ const handler = (rawValue) => {
 };
 
 const iter = (currentValue, path = '') => {
-  const lines = currentValue.flatMap(({ state, key, value }) => {
+  const lines = currentValue.flatMap(({
+    type, key, value, value1, value2, children,
+  }) => {
     const newPath = path ? `${path}.${key}` : key;
-    switch (state) {
-      case 'compare':
-        return iter(value, newPath);
+    switch (type) {
+      case 'nested':
+        return iter(children, newPath);
       case 'added':
         return `Property '${newPath}' was added with value: ${handler(value)}`;
       case 'deleted':
         return `Property '${newPath}' was removed`;
       case 'updated':
-        return `Property '${newPath}' was updated. From ${handler(value[0])} to ${handler(value[1])}`;
+        return `Property '${newPath}' was updated. From ${handler(value1)} to ${handler(value2)}`;
       default:
     }
     return null;

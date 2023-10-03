@@ -31,10 +31,6 @@ test('format json', () => {
   expect(genDiff(yamlFilepath1, yamlFilepath2, 'json')).toEqual(answerJson);
 });
 
-test('format file without extname', () => {
-  expect(genDiff(getFixturePath('yml'), yamlFilepath2, 'json')).toEqual(answerJson);
-});
-
 test('should be throw error when receiving a non-existent extname', () => {
   expect(() => {
     genDiff(getFixturePath('file-with-incorrect-extname.jsan'), jsonFilepath2, 'stylish');

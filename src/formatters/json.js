@@ -1,3 +1,3 @@
-const json = (rawValue) => JSON.stringify(rawValue);
+const format = (rawValue) => JSON.stringify(rawValue);
 
-export default json;
+export default format;

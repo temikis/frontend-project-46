@@ -1,34 +1,37 @@
 import _ from 'lodash';
 
-const handler = (rawValue) => {
+const getPath = (path, key) => (path ? `${path}.${key}` : key);
+
+const stringify = (rawValue) => {
   if (_.isObject(rawValue)) return '[complex value]';
   if (typeof rawValue === 'string') return `'${rawValue}'`;
 
-  return rawValue;
+  return String(rawValue);
 };
 
 const iter = (currentValue, path = '') => {
-  const lines = currentValue.flatMap(({
-    type, key, value, value1, value2, children,
-  }) => {
-    const newPath = path ? `${path}.${key}` : key;
+  const lines = currentValue.flatMap((element) => {
+    const { type, key } = element;
+    const newPath = getPath(path, key);
     switch (type) {
       case 'nested':
-        return iter(children, newPath);
+        return iter(element.children, newPath);
       case 'added':
-        return `Property '${newPath}' was added with value: ${handler(value)}`;
+        return `Property '${newPath}' was added with value: ${stringify(element.value)}`;
       case 'deleted':
         return `Property '${newPath}' was removed`;
       case 'updated':
-        return `Property '${newPath}' was updated. From ${handler(value1)} to ${handler(value2)}`;
+        return `Property '${newPath}' was updated. From ${stringify(element.value1)} to ${stringify(element.value2)}`;
+      case 'unchanged':
+        return null;
       default:
+        throw new Error(`Unknown type: ${type}`);
     }
-    return null;
   });
 
   return lines.filter(Boolean);
 };
 
-const plain = (arrayWithState) => iter(arrayWithState).join('\n');
+const format = (arrayWithState) => iter(arrayWithState).join('\n');
 
-export default plain;
+export default format;

@@ -29,9 +29,12 @@ const iter = (array, depth) => {
       case 'unchanged':
         return `${getCurrentIndent(depth)}  ${key}: ${stringify(element.value, depth + 1)}`;
       case 'nested':
-        return `${getCurrentIndent(depth)}  ${key}: ${iter(children, depth + 1)}`;
-      case 'updated':
-        return `${getCurrentIndent(depth)}- ${key}: ${handler(value1, depth + 1)}\n${getCurrentIndent(depth)}+ ${key}: ${handler(value2, depth + 1)}`;
+        return `${getCurrentIndent(depth)}  ${key}: ${iter(element.children, depth + 1)}`;
+      case 'updated': {
+        const line1 = `${getCurrentIndent(depth)}- ${key}: ${stringify(element.value1, depth + 1)}`;
+        const line2 = `${getCurrentIndent(depth)}+ ${key}: ${stringify(element.value2, depth + 1)}`;
+        return `${line1}\n${line2}`;
+      }
       default:
         throw new Error(`Unknown type: ${type}`);
     }
